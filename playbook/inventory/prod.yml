@@ -1,0 +1,15 @@
+---
+clickhouse:
+  hosts:
+    clickhouse-01:
+      ansible_connection: ssh
+      ansible_ssh_user: sergst
+      ansible_host: 10.19.15.241
+      ansible_private_key_file: /home/serzh/.ssh/id_ed25519  
+vector:
+  hosts:
+    vector-01:
+      ansible_connection: ssh
+      ansible_ssh_user: sergst
+      ansible_host: 10.19.15.241
+      ansible_private_key_file: /home/serzh/.ssh/id_ed25519
