@@ -11,21 +11,21 @@
     - block:
         - name: Get clickhouse distrib
           ansible.builtin.get_url:
-            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-client-22.3.3.44.x86_64.rpm"
-            dest: "./clickhouse-client-22.3.3.44.x86_64.rpm"
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-client-22.3.10.22.x86_64.rpm"
+            dest: "./clickhouse-client-22.3.10.22.x86_64.rpm"
           with_items: "{{ clickhouse_packages }}"
       rescue:
         - name: Get clickhouse distrib
           ansible.builtin.get_url:
-            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-22.3.3.44.x86_64.rpm"
-            dest: "./clickhouse-client-22.3.3.44.x86_64.rpm"
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-22.3.10.22.x86_64.rpm"
+            dest: "./clickhouse-client-22.3.10.22.x86_64.rpm"
     - name: Install clickhouse packages
       become: false
       ansible.builtin.apt:
         name:
-          - clickhouse-common-static-22.3.3.44.x86_64.rpm
-          - clickhouse-client-22.3.3.44.x86_64.rpm
-          - clickhouse-server-22.3.3.44.x86_64.rpm
+          - clickhouse-common-static-22.3.10.22.x86_64.rpm
+          - clickhouse-client-22.3.10.22.x86_64.rpm
+          - clickhouse-server-22.3.10.22.x86_64.rpm
       notify: Start clickhouse service
     - name: Flush handlers
       meta: flush_handlers
