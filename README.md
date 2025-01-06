@@ -13,5 +13,19 @@
 10) Готовый playbook выложите в свой репозиторий, поставьте тег 08-ansible-02-playbook на фиксирующий коммит, в ответ предоставьте ссылку на него.
 
 # Ответы на задания
+Сначала, после создания inventory, проверил доступность хостов ping
 
-![alt text](https://github.com/stepanovsa061/)
+![alt text](https://github.com/stepanovsa061/ansible_2/blob/main/ping.PNG)
+
+Исправил ошибки синтаксиса и заново проверил командой ansible-lint site.yml
+
+![alt text](https://github.com/stepanovsa061/ansible_2/blob/main/lint.PNG)
+
+
+Далее поставил отдельно ClickHouse
+
+![alt text](https://github.com/stepanovsa061/ansible_2/blob/main/Кликхаус.PNG)
+
+Потом Vector добавил
+
+![alt text](https://github.com/stepanovsa061/ansible_2/blob/main/Вектор.PNG)
