@@ -1,6 +1,8 @@
 ---
 - name: Install Clickhouse
   hosts: clickhouse
+  vars_files:
+    - vars.yml
   handlers:
     - name: Start clickhouse service
       become: true
@@ -11,29 +13,32 @@
     - block:
         - name: Get clickhouse distrib
           ansible.builtin.get_url:
-            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-client-22.3.10.22.x86_64.rpm"
-            dest: "./clickhouse-client-22.3.10.22.x86_64.rpm"
+            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.x86_64.rpm"
+            dest: "/tmp/{{ item }}-{{ clickhouse_version }}.rpm"
           with_items: "{{ clickhouse_packages }}"
       rescue:
-        - name: Get clickhouse distrib
+        - name: Get clickhouse distrib (rescue mode)
           ansible.builtin.get_url:
-            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-22.3.10.22.x86_64.rpm"
-            dest: "./clickhouse-client-22.3.10.22.x86_64.rpm"
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
+            dest: "/tmp/clickhouse-common-static-{{ clickhouse_version }}.rpm"
     - name: Install clickhouse packages
-      become: false
-      ansible.builtin.apt:
+      become: true
+      ansible.builtin.yum:
         name:
-          - clickhouse-common-static-22.3.10.22.x86_64.rpm
-          - clickhouse-client-22.3.10.22.x86_64.rpm
-          - clickhouse-server-22.3.10.22.x86_64.rpm
+          - /tmp/clickhouse-common-static-{{ clickhouse_version }}.rpm
+          - /tmp/clickhouse-client-{{ clickhouse_version }}.rpm
+          - /tmp/clickhouse-server-{{ clickhouse_version }}.rpm
+        disable_gpg_check: true
       notify: Start clickhouse service
     - name: Flush handlers
       meta: flush_handlers
     - name: Create database
+      become: true
       ansible.builtin.command: "clickhouse-client -q 'create database logs;'"
       register: create_db
-      failed_when: create_db.rc != 0 and create_db.rc !=82
+      failed_when: create_db.rc != 0 and create_db.rc != 82
       changed_when: create_db.rc == 0
+
 - name: Install Vector
   hosts: clickhouse
   handlers:
@@ -44,12 +49,15 @@
         state: restarted
         enabled: true
   tasks:
-    - name: Get vector distrib
+    - name: DOWNLOAD vector distrib
       ansible.builtin.get_url:
-        url: "https://packages.timber.io/vector/{{ vector_version }}/vector_{{ vector_version }}-1_amd64.deb"
-        dest: "./vector-{{ vector_version }}.dpkg"
+        url: "https://packages.timber.io/vector/0.22.1/vector-0.22.1-1.x86_64.rpm"
+        dest: "./vector-0.22.1-1.x86_64.rpm"
+        mode: "0644"
     - name: Install vector packages
-      become: true
-      ansible.builtin.apt:
-        deb: ./vector-{{ vector_version }}.dpkg
+#        become: true
+      ansible.builtin.yum:
+        name: "./vector-0.22.1-1.x86_64.rpm"
+        disable_gpg_check: true
+        state: present
       notify: Start vector service
